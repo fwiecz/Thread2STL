@@ -1,35 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <fx:root type="javafx.scene.layout.VBox"
          xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
 
     <padding>
-        <Insets topRightBottomLeft="10"/>
+        <Insets topRightBottomLeft="4"/>
     </padding>
 
-    <GridPane vgap="10" hgap="10">
+    <TitledPane text="%label.type" collapsible="false">
+        <padding>
+            <Insets topRightBottomLeft="4"/>
+        </padding>
+        <GridPane vgap="10" hgap="10">
+            <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="%label.selectType" HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="typeComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        </GridPane>
+    </TitledPane>
 
-        <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="%label.diameter"/>
-        <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" text="%default.diameter" prefWidth="80" />
-        <Label GridPane.rowIndex="0" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+    <TitledPane text="%label.thread" collapsible="false">
+        <padding>
+            <Insets topRightBottomLeft="4"/>
+        </padding>
+        <GridPane vgap="10" hgap="10">
 
-        <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="%label.threadLenght"/>
-        <TextField GridPane.rowIndex="1" GridPane.columnIndex="1" text="%default.threadLength" prefWidth="80" />
-        <Label GridPane.rowIndex="1" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+            <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="%label.outerDiameter"/>
+            <Spinner fx:id="threadDiaSpinner" editable="true"
+                     GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="80">
+                <valueFactory>
+                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="0.1" max="9999" initialValue="%default.diameter"
+                                                                   amountToStepBy="0.1"/>
+                </valueFactory>
+            </Spinner>
+            <Label GridPane.rowIndex="0" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
 
-        <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="%label.threadAngle"/>
-        <TextField GridPane.rowIndex="2" GridPane.columnIndex="1" text="%default.threadAngle" prefWidth="80" />
-        <Label GridPane.rowIndex="2" GridPane.columnIndex="2" text="%label.unit.degrees"/>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="%label.threadLenght"/>
+            <Spinner fx:id="threadLengthSpinner" editable="true"
+                     GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="80">
+                <valueFactory>
+                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="1" max="9999"
+                                                                   initialValue="%default.threadLength"
+                                                                   amountToStepBy="1"/>
+                </valueFactory>
+            </Spinner>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
 
-        <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="%label.threadStep"/>
-        <TextField GridPane.rowIndex="3" GridPane.columnIndex="1" text="%default.threadStep" prefWidth="80" />
-        <Label GridPane.rowIndex="3" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+            <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="%label.threadAngle"/>
+            <Spinner fx:id="threadAngleSpinner" editable="true"
+                     GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="80">
+                <valueFactory>
+                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="5" max="89" initialValue="%default.threadAngle"
+                                                                   amountToStepBy="1"/>
+                </valueFactory>
+            </Spinner>
+            <Label GridPane.rowIndex="2" GridPane.columnIndex="2" text="%label.unit.degrees"/>
 
-    </GridPane>
+            <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="%label.threadStep"/>
+            <Spinner fx:id="threadStepSpinner" editable="true"
+                     GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="80">
+                <valueFactory>
+                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="0.1" max="20" initialValue="%default.threadStep"
+                                                                   amountToStepBy="0.1"/>
+                </valueFactory>
+            </Spinner>
+            <Label GridPane.rowIndex="3" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
 
+        </GridPane>
+    </TitledPane>
 </fx:root>

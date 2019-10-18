@@ -12,7 +12,7 @@
         <Button text="%label.exportSTL"/>
     </ToolBar>
 
-    <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.33">
+    <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.35">
 
         <TabPane minWidth="200">
             <Tab text="%label.preferences" closable="false">
