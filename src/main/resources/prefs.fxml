@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<fx:root type="javafx.scene.layout.VBox"
+         xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml">
+
+    <padding>
+        <Insets topRightBottomLeft="10"/>
+    </padding>
+
+    <GridPane vgap="10" hgap="10">
+
+        <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="%label.diameter"/>
+        <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" text="%default.diameter" prefWidth="80" />
+        <Label GridPane.rowIndex="0" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+
+        <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="%label.threadLenght"/>
+        <TextField GridPane.rowIndex="1" GridPane.columnIndex="1" text="%default.threadLength" prefWidth="80" />
+        <Label GridPane.rowIndex="1" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+
+        <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="%label.threadAngle"/>
+        <TextField GridPane.rowIndex="2" GridPane.columnIndex="1" text="%default.threadAngle" prefWidth="80" />
+        <Label GridPane.rowIndex="2" GridPane.columnIndex="2" text="%label.unit.degrees"/>
+
+        <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="%label.threadStep"/>
+        <TextField GridPane.rowIndex="3" GridPane.columnIndex="1" text="%default.threadStep" prefWidth="80" />
+        <Label GridPane.rowIndex="3" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+
+    </GridPane>
+
+</fx:root>

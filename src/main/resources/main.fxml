@@ -1,0 +1,27 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import de.hpled.threadtostl.Preferences?>
+<VBox fx:controller="de.hpled.threadtostl.MainController"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <ToolBar>
+        <Button text="%label.openPreset"/>
+        <Button text="%label.savePreset"/>
+        <Separator/>
+        <Button text="%label.exportSTL"/>
+    </ToolBar>
+
+    <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.33">
+
+        <TabPane minWidth="200">
+            <Tab text="%label.preferences" closable="false">
+                <Preferences/>
+            </Tab>
+        </TabPane>
+
+        <Pane/>
+
+    </SplitPane>
+
+</VBox>
