@@ -9,8 +9,8 @@
       xmlns:fx="http://javafx.com/fxml">
 
     <ToolBar>
-        <Button text="%label.openPreset"/>
-        <Button text="%label.savePreset"/>
+        <Button fx:id="loadPresetButton" text="%label.openPreset"/>
+        <Button fx:id="savePresetButton" text="%label.savePreset"/>
         <Separator/>
         <Button fx:id="exportButton" text="%label.exportSTL"/>
         <Pane HBox.hgrow="ALWAYS"/>

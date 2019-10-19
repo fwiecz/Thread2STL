@@ -34,6 +34,10 @@ class MainController : Initializable {
     private lateinit var exportButton: Button
     @FXML
     private lateinit var previewMode: ComboBox<String>
+    @FXML
+    private lateinit var loadPresetButton: Button
+    @FXML
+    private lateinit var savePresetButton: Button
 
     private val stlService = ModellingService()
     private val executor = ScheduledThreadPoolExecutor(0)
@@ -43,6 +47,7 @@ class MainController : Initializable {
             DrawMode.FILL to resources.getString("label.drawmode.fill"),
             DrawMode.LINE to resources.getString("label.drawmode.wire")
     )
+    private val presetManager = PresetManager()
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         updatePreviewButton.setOnAction { rebuildModel() }
@@ -55,6 +60,11 @@ class MainController : Initializable {
         previewMode.selectionModel.select(0)
         previewMode.selectionModel.selectedIndexProperty().addListener {observable, oldValue, newValue ->
             previewScene.setDrawMode( drawModeMap.keys.toList().get(newValue as Int) )
+        }
+        savePresetButton.setOnAction { presetManager.savePreset(preferences.getJobExport(), mRoot.scene.window) }
+        loadPresetButton.setOnAction {
+            preferences.loadPreset(presetManager.loadPreset(mRoot.scene.window))
+            rebuildModel()
         }
         rebuildModel()
     }

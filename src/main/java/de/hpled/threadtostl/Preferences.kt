@@ -80,6 +80,18 @@ class Preferences : VBox(), Initializable {
         })
     }
 
+    fun loadPreset(job: Job?) {
+        if(job != null) {
+            typeComboBox.selectionModel.select( types.get(job.type) )
+            threadDiaSpinner.valueFactory.value = job.outerDiameter
+            threadLengthSpinner.valueFactory.value = job.length
+            threadAngleSpinner.valueFactory.value = job.angle
+            threadStepSpinner.valueFactory.value = job.step
+            resolutionExport.valueFactory.value = job.resolution
+            wallThicknessSpinner.valueFactory.value = job.wallThinkness
+        }
+    }
+
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         typeComboBox.items.setAll(types.values)
         typeComboBox.selectionModel.selectedIndexProperty().addListener { observable, oldValue, newValue ->
