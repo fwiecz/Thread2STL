@@ -38,7 +38,7 @@
             </Spinner>
             <Label GridPane.rowIndex="0" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
 
-            <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="%label.threadLenght"/>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="%label.threadLength"/>
             <Spinner fx:id="threadLengthSpinner" editable="true"
                      GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="80">
                 <valueFactory>

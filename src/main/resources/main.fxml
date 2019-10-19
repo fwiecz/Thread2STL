@@ -14,7 +14,7 @@
         <Separator/>
         <Button fx:id="exportButton" text="%label.exportSTL"/>
         <Pane HBox.hgrow="ALWAYS"/>
-        <Label text="Preview Mode:"/>
+        <Label text="%label.previewMode"/>
         <ComboBox fx:id="previewMode" />
     </ToolBar>
 
