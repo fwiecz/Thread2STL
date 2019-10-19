@@ -1,6 +1,7 @@
 package de.hpled.threadtostl
 
 import com.sun.javafx.geom.Vec3f
+import javafx.geometry.Point2D
 
 data class TriPart(
         var top: Vec3f,
@@ -88,9 +89,16 @@ class ModellingService {
         }
         model.vertices.addAll(ringTop)
 
+        // find nearest vertex to 0°
+        val nearestIndex = (parts.size-job.resolution until parts.size).map {
+            val t = parts[it].top
+            val angle = Point2D(t.x.toDouble(), t.y.toDouble()).angle(1.0, 0.0)
+            Pair(angle, it)
+        }.sortedBy { it.first }.first().second - (parts.size - job.resolution)
+
         for (i in 0 until job.resolution) {
-            val in1 = parts[(parts.size - job.resolution) + i].top
-            val in2 = parts[(parts.size - job.resolution) + (i + 1) % job.resolution].top
+            val in1 = parts[(parts.size - job.resolution) + (i + nearestIndex) % job.resolution].top
+            val in2 = parts[(parts.size - job.resolution) + (i + nearestIndex + 1) % job.resolution].top
             val out1 = ringTop[i]
             val out2 = ringTop[(i + 1) % job.resolution]
             model.faces += intArrayOf(io(in1), io(out1), io(out2))
