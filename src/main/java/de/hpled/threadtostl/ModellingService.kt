@@ -34,11 +34,113 @@ data class TriPart(
 
 class ModellingService {
 
+    private fun finalizeToBolt(job: Job, model: Model, parts: List<TriPart>, progress: (p: Double) -> Unit): Model {
+        var progCount = 0
+        val progStep = 0.2 / (job.resolution * 2)
+
+        fun io(v: Vec3f): Int {
+            return model.vertices.indexOf(v)
+        }
+
+        // close top
+        val topCenter = Vec3f(0f, 0f, job.length.toFloat())
+        model.vertices += topCenter
+        val tcIndex = model.vertices.indexOf(topCenter)
+        for (i in (parts.size - job.resolution - 1) until parts.size - 1) {
+            val v1 = io(parts[i].top)
+            val v2 = io(parts[i + 1].top)
+            model.faces += intArrayOf(v1, v2, tcIndex)
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+
+        // close bottom
+        val bottomCenter = Vec3f(0f, 0f, 0f)
+        model.vertices += bottomCenter
+        val bcIndex = model.vertices.indexOf(bottomCenter)
+        for (i in 0 until job.resolution) {
+            val v1 = io(parts[i].bottom ?: parts[i].top)
+            val v2 = io(parts[i + 1].bottom ?: parts[i + 1].top)
+            model.faces += intArrayOf(bcIndex, v2, v1)
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+
+        return model
+    }
+
+    private fun finalizeToNut(job: Job, model: Model, parts: List<TriPart>, progress: (p: Double) -> Unit): Model {
+        var progCount = 0
+        val progStep = 0.2 / (job.resolution * 5)
+
+        val angleStep = 360f / job.resolution
+        val radius = (job.getRadius() + job.wallThinkness).toFloat()
+
+        fun io(v: Vec3f): Int {
+            return model.vertices.indexOf(v)
+        }
+
+        // top side
+        val ringTop = mutableListOf<Vec3f>()
+        for (i in 0 until job.resolution) {
+            val angle = i * angleStep
+            val dir = Vector2(radius).rotate(angle)
+            ringTop += Vec3f(dir.x, dir.y, job.length.toFloat())
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+        model.vertices.addAll(ringTop)
+
+        for (i in 0 until job.resolution) {
+            val in1 = parts[(parts.size - job.resolution) + i].top
+            val in2 = parts[(parts.size - job.resolution) + (i + 1) % job.resolution].top
+            val out1 = ringTop[i]
+            val out2 = ringTop[(i + 1) % job.resolution]
+            model.faces += intArrayOf(io(in1), io(out1), io(out2))
+            model.faces += intArrayOf(io(in1), io(out2), io(in2))
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+
+        // bottom side
+        val ringBot = mutableListOf<Vec3f>()
+        for (i in 0 until job.resolution) {
+            val angle = i * angleStep
+            val dir = Vector2(radius).rotate(angle)
+            ringBot += Vec3f(dir.x, dir.y, 0f)
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+        model.vertices.addAll(ringBot)
+
+        for (i in 0 until job.resolution) {
+            val in1 = parts[i].bottom ?: parts[i].top
+            val in2 = parts[(i + 1) % job.resolution].bottom ?: parts[(i + 1) % job.resolution].top
+            val out1 = ringBot[i]
+            val out2 = ringBot[(i + 1) % job.resolution]
+            model.faces += intArrayOf(io(in1), io(out1), io(out2)).apply { reverse() }
+            model.faces += intArrayOf(io(in1), io(out2), io(in2)).apply { reverse() }
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+
+        // connect rings
+        for (i in 0 until job.resolution) {
+            val top1 = ringTop[i]
+            val top2 = ringTop[(i + 1) % job.resolution]
+            val bot1 = ringBot[i]
+            val bot2 = ringBot[(i + 1) % job.resolution]
+            model.faces += intArrayOf(io(top1), io(bot2), io(top2))
+            model.faces += intArrayOf(io(top1), io(bot1), io(bot2))
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+
+        return model
+    }
+
     private fun createModelFromTriParts(job: Job, parts: List<TriPart>, progress: (p: Double) -> Unit): Model {
-        var progCount = 1
-        val progStep = 0.5 / (parts.size + job.resolution * 2)
+        var progCount = 0
+        val progStep = 0.5 / (parts.size)
 
         val model = Model(job)
+
+        // Reverse vertice enumeration for inverse faces when Type == NUT
+        val rev = if (job.type == Type.BOLT) false else true
+
         // since we are reusing vertices (top & bottom of some TriPoints are the same)
         val points = parts.fold(mutableSetOf<Vec3f>(), { acc, triPart ->
             acc.add(triPart.top)
@@ -50,58 +152,42 @@ class ModellingService {
         fun io(v: Vec3f): Int {
             return points.indexOf(v)
         }
-        model.faces += intArrayOf(io(parts[0].top), io(parts[1].tip!!), io(parts[1].top))
-        model.faces += intArrayOf(io(parts[0].top), io(parts[1].bottom!!), io(parts[1].tip!!))
+
+        model.faces += intArrayOf(io(parts[0].top), io(parts[1].tip!!), io(parts[1].top)).apply { if (rev) reverse() }
+        model.faces += intArrayOf(io(parts[0].top), io(parts[1].bottom!!), io(parts[1].tip!!)).apply { if (rev) reverse() }
         for (i in 2 until parts.size - 1) {
-            model.faces += intArrayOf(io(parts[i].top), io(parts[i - 1].top), io(parts[i].tip!!))
-            model.faces += intArrayOf(io(parts[i].tip!!), io(parts[i - 1].top), io(parts[i - 1].tip!!))
-            model.faces += intArrayOf(io(parts[i].tip!!), io(parts[i - 1].tip!!), io(parts[i].bottom!!))
-            model.faces += intArrayOf(io(parts[i].bottom!!), io(parts[i - 1].tip!!), io(parts[i - 1].bottom!!))
-            progress(progCount * progStep + 0.5).also { progCount ++ }
+            model.faces += intArrayOf(io(parts[i].top), io(parts[i - 1].top), io(parts[i].tip!!)).apply { if (rev) reverse() }
+            model.faces += intArrayOf(io(parts[i].tip!!), io(parts[i - 1].top), io(parts[i - 1].tip!!)).apply { if (rev) reverse() }
+            model.faces += intArrayOf(io(parts[i].tip!!), io(parts[i - 1].tip!!), io(parts[i].bottom!!)).apply { if (rev) reverse() }
+            model.faces += intArrayOf(io(parts[i].bottom!!), io(parts[i - 1].tip!!), io(parts[i - 1].bottom!!)).apply { if (rev) reverse() }
+            progress(progCount * progStep + 0.3).also { progCount++ }
         }
         val s = parts.size - 1
-        model.faces += intArrayOf(io(parts[s].top), io(parts[s - 1].top), io(parts[s - 1].tip!!))
-        model.faces += intArrayOf(io(parts[s].top), io(parts[s - 1].tip!!), io(parts[s - 1].bottom!!))
-
-        // close top
-        val topCenter = Vec3f(0f, 0f, job.length.toFloat())
-        model.vertices += topCenter
-        val tcIndex = model.vertices.indexOf(topCenter)
-        for(i in (parts.size - job.resolution -1) until parts.size-1) {
-            val v1 = io(parts[i].top)
-            val v2 = io(parts[i+1].top)
-            model.faces += intArrayOf(v1, v2, tcIndex)
-            progress(progCount * progStep + 0.5).also { progCount ++ }
-        }
-
-        // close bottom
-        val bottomCenter = Vec3f(0f, 0f, 0f)
-        model.vertices += bottomCenter
-        val bcIndex = model.vertices.indexOf(bottomCenter)
-        for(i in 0 until job.resolution) {
-            val v1 = io(parts[i].bottom ?: parts[i].top)
-            val v2 = io(parts[i+1].bottom ?: parts[i+1].top)
-            model.faces += intArrayOf(bcIndex, v2, v1)
-            progress(progCount * progStep + 0.5).also { progCount ++ }
-        }
+        model.faces += intArrayOf(io(parts[s].top), io(parts[s - 1].top), io(parts[s - 1].tip!!)).apply { if (rev) reverse() }
+        model.faces += intArrayOf(io(parts[s].top), io(parts[s - 1].tip!!), io(parts[s - 1].bottom!!)).apply { if (rev) reverse() }
 
         return model
     }
 
-    fun create(job: Job, progress: (p: Double) -> Unit): Model {
+    private fun createThread(job: Job, progress: (p: Double) -> Unit): List<TriPart> {
         val pitchPerStep = (job.step / job.resolution).toFloat()
         val pitchTotal = (job.length / pitchPerStep).toInt()
         val angleStep = 360f / job.resolution
 
-        val tipLength = TriPart(Vec3f(0f, 0f, job.step.toFloat()), Vec3f(0f, 0f, 0f) )
+        val tipLength = TriPart(Vec3f(0f, 0f, job.step.toFloat()), Vec3f(0f, 0f, 0f))
                 .getTipLength(job.angle.toFloat())
-        val radius = job.getRadius() - tipLength
+        val radius = if (job.type == Type.BOLT) {
+            job.getRadius() - tipLength
+        } else {
+            job.getRadius()
+        }
+        val tipDir = if (job.type == Type.BOLT) 1 else -1
 
         // including first vertex
         val a = Vector2(radius)
         val parts = mutableListOf(TriPart(Vec3f(a.x, a.y, 0f)))
 
-        val progStep = 0.5 / (pitchTotal + job.resolution)
+        val progStep = 0.3 / (pitchTotal + job.resolution)
         var progCount = 1
 
         // Bottom, first round
@@ -111,10 +197,10 @@ class ModellingService {
             val bottom = Vec3f(dir.x, dir.y, 0f)
             val top = Vec3f(bottom).apply { z = pitchPerStep * i }
             val t = TriPart(top, bottom).apply {
-                createTip(getTipLength(job.angle.toFloat()), angle, radius)
+                createTip(getTipLength(job.angle.toFloat()) * tipDir, angle, radius)
             }
             parts += t
-            progress(progCount * progStep).also { progCount ++ }
+            progress(progCount * progStep).also { progCount++ }
         }
 
         // mid part
@@ -122,9 +208,9 @@ class ModellingService {
             val angle = (i * angleStep) % 360
             val bottom = parts[i - job.resolution].top
             val top = Vec3f(bottom).apply { z = pitchPerStep * i }
-            val t = TriPart(top, bottom).apply { createTip(tipLength, angle, radius) }
+            val t = TriPart(top, bottom).apply { createTip(tipLength * tipDir, angle, radius) }
             parts += t
-            progress(progCount * progStep).also { progCount ++ }
+            progress(progCount * progStep).also { progCount++ }
         }
 
         // top end part
@@ -133,15 +219,23 @@ class ModellingService {
             val bottom = parts[i - job.resolution].top
             val top = Vec3f(bottom).apply { z = job.length.toFloat() }
             val t = TriPart(top, bottom).apply {
-                createTip(getTipLength(job.angle.toFloat()), angle, radius)
+                createTip(getTipLength(job.angle.toFloat()) * tipDir, angle, radius)
             }
             parts += t
-            progress(progCount * progStep).also { progCount ++ }
+            progress(progCount * progStep).also { progCount++ }
         }
 
         // final vertex
         parts += TriPart(parts[pitchTotal].top)
+        return parts
+    }
 
-        return createModelFromTriParts(job, parts, progress)
+    fun create(job: Job, progress: (p: Double) -> Unit): Model {
+        val threadParts = createThread(job, progress)
+        val model = createModelFromTriParts(job, threadParts, progress)
+        return when (job.type) {
+            Type.BOLT -> finalizeToBolt(job, model, threadParts, progress)
+            Type.NUT -> finalizeToNut(job, model, threadParts, progress)
+        }
     }
 }

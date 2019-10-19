@@ -72,6 +72,25 @@
         </GridPane>
     </TitledPane>
 
+    <TitledPane fx:id="wallPrefs" text="%label.wallPrefs" collapsible="false">
+        <padding>
+            <Insets topRightBottomLeft="4"/>
+        </padding>
+        <GridPane vgap="10" hgap="10">
+
+            <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="%label.thickness"/>
+            <Spinner fx:id="wallThicknessSpinner" editable="true"
+                     GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="80">
+                <valueFactory>
+                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="0.1" max="999" initialValue="%default.wallThickness"
+                                                                   amountToStepBy="1"/>
+                </valueFactory>
+            </Spinner>
+            <Label GridPane.rowIndex="0" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+
+        </GridPane>
+    </TitledPane>
+
     <TitledPane text="%label.resolution" collapsible="false">
         <padding>
             <Insets topRightBottomLeft="4"/>

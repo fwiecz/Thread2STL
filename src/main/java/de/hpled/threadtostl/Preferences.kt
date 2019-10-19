@@ -6,6 +6,7 @@ import javafx.fxml.Initializable
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Spinner
 import javafx.scene.control.TextFormatter
+import javafx.scene.control.TitledPane
 import javafx.scene.layout.VBox
 import javafx.util.StringConverter
 import java.lang.Exception
@@ -30,6 +31,10 @@ class Preferences : VBox(), Initializable {
     private lateinit var resolutionPreview: Spinner<Int>
     @FXML
     private lateinit var resolutionExport: Spinner<Int>
+    @FXML
+    private lateinit var wallThicknessSpinner: Spinner<Double>
+    @FXML
+    private lateinit var wallPrefs: TitledPane
 
     private val resources = ResourceBundle.getBundle("strings")!!
     private val types = mapOf<Type, String>(
@@ -52,6 +57,7 @@ class Preferences : VBox(), Initializable {
         angle = threadAngleSpinner.value
         step = threadStepSpinner.value
         resolution = resolutionPreview.value
+        wallThinkness = wallThicknessSpinner.value
     }
 
     fun getJobExport() = getJobPreview().apply {
@@ -76,6 +82,9 @@ class Preferences : VBox(), Initializable {
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         typeComboBox.items.setAll(types.values)
+        typeComboBox.selectionModel.selectedIndexProperty().addListener { observable, oldValue, newValue ->
+            wallPrefs.isDisable = Type.values().get(newValue as Int) != Type.NUT
+        }
         typeComboBox.selectionModel.select(0)
 
         addSpinnerListener(threadDiaSpinner)
@@ -84,5 +93,6 @@ class Preferences : VBox(), Initializable {
         addSpinnerListener(threadStepSpinner)
         addSpinnerListener(resolutionPreview)
         addSpinnerListener(resolutionExport)
+        addSpinnerListener(wallThicknessSpinner)
     }
 }
