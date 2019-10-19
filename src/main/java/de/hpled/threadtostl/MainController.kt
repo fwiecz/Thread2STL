@@ -5,8 +5,10 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.Button
+import javafx.scene.control.ComboBox
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.VBox
+import javafx.scene.shape.DrawMode
 import javafx.stage.FileChooser
 import java.io.BufferedWriter
 import java.io.FileWriter
@@ -30,11 +32,17 @@ class MainController : Initializable {
     private lateinit var progressBar: ProgressBar
     @FXML
     private lateinit var exportButton: Button
+    @FXML
+    private lateinit var previewMode: ComboBox<String>
 
     private val stlService = ModellingService()
-    private val executor = ScheduledThreadPoolExecutor(1)
+    private val executor = ScheduledThreadPoolExecutor(0)
     private val resources = ResourceBundle.getBundle("strings")!!
     private val isRendering = SimpleBooleanProperty(false)
+    private val drawModeMap = mapOf (
+            DrawMode.FILL to resources.getString("label.drawmode.fill"),
+            DrawMode.LINE to resources.getString("label.drawmode.wire")
+    )
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         updatePreviewButton.setOnAction { rebuildModel() }
@@ -42,6 +50,11 @@ class MainController : Initializable {
         isRendering.addListener { observable, oldValue, newValue ->
             exportButton.isDisable = newValue
             updatePreviewButton.isDisable = newValue
+        }
+        previewMode.items.setAll(drawModeMap.values)
+        previewMode.selectionModel.select(0)
+        previewMode.selectionModel.selectedIndexProperty().addListener {observable, oldValue, newValue ->
+            previewScene.setDrawMode( drawModeMap.keys.toList().get(newValue as Int) )
         }
         rebuildModel()
     }

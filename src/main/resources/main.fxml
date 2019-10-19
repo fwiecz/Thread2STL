@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <VBox fx:id="mRoot"
       fx:controller="de.hpled.threadtostl.MainController"
       xmlns:fx="http://javafx.com/fxml">
@@ -12,6 +13,9 @@
         <Button text="%label.savePreset"/>
         <Separator/>
         <Button fx:id="exportButton" text="%label.exportSTL"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label text="Preview Mode:"/>
+        <ComboBox fx:id="previewMode" />
     </ToolBar>
 
     <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.1">
@@ -26,7 +30,8 @@
 
                     <ToolBar>
                         <Button fx:id="updatePreviewButton" text="%label.updatePreview" alignment="CENTER"/>
-                        <ProgressBar fx:id="progressBar" progress="0" visible="false"/>
+                        <ProgressBar fx:id="progressBar" progress="0" visible="false"
+                                     HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
                     </ToolBar>
                 </VBox>
             </Tab>

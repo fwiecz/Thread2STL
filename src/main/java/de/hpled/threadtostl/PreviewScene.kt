@@ -10,6 +10,8 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.DrawMode
 import javafx.scene.shape.MeshView
 import javafx.scene.transform.Rotate
+import kotlin.math.max
+import kotlin.math.min
 
 class PreviewScene : Pane() {
 
@@ -51,13 +53,17 @@ class PreviewScene : Pane() {
             lastPos[1] = it.y
             rotateCamera(movex, movey)
         }
+        setOnScroll {
+            camera.translateZ -= (it.deltaY * camera.translateZ) * 0.002
+            camera.translateZ = min(-5.0, max(-1000.0, camera.translateZ))
+        }
     }
 
     private fun rotateCamera(x: Double, y: Double) {
-        if(x != 0.0) {
+        if (x != 0.0) {
             meshRotationZ.angle += x * 0.2
         }
-        if(y != 0.0) {
+        if (y != 0.0) {
             meshRotationX.angle += y * 0.2
         }
     }
@@ -67,6 +73,10 @@ class PreviewScene : Pane() {
 
         }
         meshRotationX.pivotZ = model.job.length * 0.5
+    }
+
+    fun setDrawMode(mode: DrawMode) {
+        meshView.drawMode = mode
     }
 
     companion object {
