@@ -37,7 +37,7 @@ class ModellingService {
 
     private fun finalizeToBolt(job: Job, model: Model, parts: List<TriPart>, progress: (p: Double) -> Unit): Model {
         var progCount = 0
-        val progStep = 0.2 / (job.resolution * 2)
+        val progStep = 0.2 / (job.resolution * 4 + model.vertices.size)
 
         fun io(v: Vec3f): Int {
             return model.vertices.indexOf(v)
@@ -62,6 +62,14 @@ class ModellingService {
             val v1 = io(parts[i].bottom ?: parts[i].top)
             val v2 = io(parts[i + 1].bottom ?: parts[i + 1].top)
             model.faces += intArrayOf(bcIndex, v2, v1)
+            progress(progCount * progStep + 0.8).also { progCount++ }
+        }
+
+        // rotate the whole object 180° so it fits into the corresponding nut when both are projected over one other.
+        model.vertices.forEach {
+            val dir = Vector2().apply { x = it.x; y = it.y }.rotate(180f)
+            it.x = dir.x
+            it.y = dir.y
             progress(progCount * progStep + 0.8).also { progCount++ }
         }
 
