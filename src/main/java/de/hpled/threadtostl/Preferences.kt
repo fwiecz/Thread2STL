@@ -5,9 +5,15 @@ import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Spinner
+import javafx.scene.control.TextFormatter
 import javafx.scene.layout.VBox
+import javafx.util.StringConverter
+import java.lang.Exception
 import java.net.URL
 import java.util.*
+import java.util.function.UnaryOperator
+import javax.swing.event.ChangeEvent
+import javax.swing.event.ChangeListener
 
 class Preferences : VBox(), Initializable {
     @FXML
@@ -52,8 +58,31 @@ class Preferences : VBox(), Initializable {
         resolution = resolutionExport.value
     }
 
+    private fun <T> addSpinnerListener(spinner: Spinner<T>) {
+        spinner.focusedProperty().addListener { ob, ol, nw -> spinner.increment(0) }
+        spinner.editor.textFormatter = TextFormatter<String>(object : UnaryOperator<TextFormatter.Change> {
+            override fun apply(t: TextFormatter.Change): TextFormatter.Change {
+                return t.apply {
+                    if(t.controlNewText.isEmpty()) {
+                        t.text = "0"
+                    }
+                    if(!t.controlNewText.matches(Regex("[0-9,.]*"))) {
+                        t.text = ""
+                    }
+                }
+            }
+        })
+    }
+
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         typeComboBox.items.setAll(types.values)
         typeComboBox.selectionModel.select(0)
+
+        addSpinnerListener(threadDiaSpinner)
+        addSpinnerListener(threadLengthSpinner)
+        addSpinnerListener(threadAngleSpinner)
+        addSpinnerListener(threadStepSpinner)
+        addSpinnerListener(resolutionPreview)
+        addSpinnerListener(resolutionExport)
     }
 }
