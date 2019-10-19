@@ -42,6 +42,8 @@ class Preferences : VBox(), Initializable {
             Type.NUT to resources.getString("label.typeNut")
     )
 
+    var onTypeChangedListener: Runnable? = null
+
     init {
         FXMLLoader(javaClass.getResource("/prefs.fxml"), resources).apply {
             setRoot(this@Preferences)
@@ -96,6 +98,7 @@ class Preferences : VBox(), Initializable {
         typeComboBox.items.setAll(types.values)
         typeComboBox.selectionModel.selectedIndexProperty().addListener { observable, oldValue, newValue ->
             wallPrefs.isDisable = Type.values().get(newValue as Int) != Type.NUT
+            onTypeChangedListener?.run()
         }
         typeComboBox.selectionModel.select(0)
 

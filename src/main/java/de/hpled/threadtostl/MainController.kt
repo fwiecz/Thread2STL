@@ -66,6 +66,7 @@ class MainController : Initializable {
             preferences.loadPreset(presetManager.loadPreset(mRoot.scene.window))
             rebuildModel()
         }
+        preferences.onTypeChangedListener = Runnable { rebuildModel() }
         rebuildModel()
     }
 
