@@ -2,7 +2,9 @@
 <?import de.hpled.threadtostl.PreviewScene?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
-<VBox fx:controller="de.hpled.threadtostl.MainController"
+<?import javafx.scene.layout.HBox?>
+<VBox fx:id="mRoot"
+      fx:controller="de.hpled.threadtostl.MainController"
       xmlns:fx="http://javafx.com/fxml">
 
     <ToolBar>
@@ -12,13 +14,23 @@
         <Button fx:id="exportButton" text="%label.exportSTL"/>
     </ToolBar>
 
-    <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.35">
+    <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.1">
 
-        <TabPane minWidth="200">
+        <TabPane minWidth="-Infinity">
+
             <Tab text="%label.preferences" closable="false">
-                <Preferences fx:id="preferences"/>
+                <VBox>
+                    <ScrollPane VBox.vgrow="ALWAYS">
+                        <Preferences fx:id="preferences"/>
+                    </ScrollPane>
 
+                    <ToolBar>
+                        <Button fx:id="updatePreviewButton" text="%label.updatePreview" alignment="CENTER"/>
+                        <ProgressBar fx:id="progressBar" progress="0" visible="false"/>
+                    </ToolBar>
+                </VBox>
             </Tab>
+
         </TabPane>
 
         <PreviewScene fx:id="previewScene"/>

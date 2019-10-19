@@ -34,7 +34,10 @@ data class TriPart(
 
 class ModellingService {
 
-    private fun createModelFromTriParts(job: Job, parts: List<TriPart>): Model {
+    private fun createModelFromTriParts(job: Job, parts: List<TriPart>, progress: (p: Double) -> Unit): Model {
+        var progCount = 1
+        val progStep = 0.5 / (parts.size + job.resolution * 2)
+
         val model = Model(job)
         // since we are reusing vertices (top & bottom of some TriPoints are the same)
         val points = parts.fold(mutableSetOf<Vec3f>(), { acc, triPart ->
@@ -54,6 +57,7 @@ class ModellingService {
             model.faces += intArrayOf(io(parts[i].tip!!), io(parts[i - 1].top), io(parts[i - 1].tip!!))
             model.faces += intArrayOf(io(parts[i].tip!!), io(parts[i - 1].tip!!), io(parts[i].bottom!!))
             model.faces += intArrayOf(io(parts[i].bottom!!), io(parts[i - 1].tip!!), io(parts[i - 1].bottom!!))
+            progress(progCount * progStep + 0.5).also { progCount ++ }
         }
         val s = parts.size - 1
         model.faces += intArrayOf(io(parts[s].top), io(parts[s - 1].top), io(parts[s - 1].tip!!))
@@ -67,6 +71,7 @@ class ModellingService {
             val v1 = io(parts[i].top)
             val v2 = io(parts[i+1].top)
             model.faces += intArrayOf(v1, v2, tcIndex)
+            progress(progCount * progStep + 0.5).also { progCount ++ }
         }
 
         // close bottom
@@ -77,18 +82,16 @@ class ModellingService {
             val v1 = io(parts[i].bottom ?: parts[i].top)
             val v2 = io(parts[i+1].bottom ?: parts[i+1].top)
             model.faces += intArrayOf(bcIndex, v2, v1)
+            progress(progCount * progStep + 0.5).also { progCount ++ }
         }
 
         return model
     }
 
-    fun create(job: Job): Model {
+    fun create(job: Job, progress: (p: Double) -> Unit): Model {
         val pitchPerStep = (job.step / job.resolution).toFloat()
-        println("Pitch per step: ${pitchPerStep}mm")
         val pitchTotal = (job.length / pitchPerStep).toInt()
-        println("Pitch total: $pitchTotal")
         val angleStep = 360f / job.resolution
-        println("Angle per step: $angleStep")
 
         val tipLength = TriPart(Vec3f(0f, 0f, job.step.toFloat()), Vec3f(0f, 0f, 0f) )
                 .getTipLength(job.angle.toFloat())
@@ -98,6 +101,8 @@ class ModellingService {
         val a = Vector2(radius)
         val parts = mutableListOf(TriPart(Vec3f(a.x, a.y, 0f)))
 
+        val progStep = 0.5 / (pitchTotal + job.resolution)
+        var progCount = 1
 
         // Bottom, first round
         for (i in 1 until job.resolution) {
@@ -109,6 +114,7 @@ class ModellingService {
                 createTip(getTipLength(job.angle.toFloat()), angle, radius)
             }
             parts += t
+            progress(progCount * progStep).also { progCount ++ }
         }
 
         // mid part
@@ -118,6 +124,7 @@ class ModellingService {
             val top = Vec3f(bottom).apply { z = pitchPerStep * i }
             val t = TriPart(top, bottom).apply { createTip(tipLength, angle, radius) }
             parts += t
+            progress(progCount * progStep).also { progCount ++ }
         }
 
         // top end part
@@ -129,11 +136,12 @@ class ModellingService {
                 createTip(getTipLength(job.angle.toFloat()), angle, radius)
             }
             parts += t
+            progress(progCount * progStep).also { progCount ++ }
         }
 
         // final vertex
         parts += TriPart(parts[pitchTotal].top)
 
-        return createModelFromTriParts(job, parts)
+        return createModelFromTriParts(job, parts, progress)
     }
 }

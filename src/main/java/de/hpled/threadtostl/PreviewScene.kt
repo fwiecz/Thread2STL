@@ -63,7 +63,9 @@ class PreviewScene : Pane() {
     }
 
     fun setModel(model: Model) {
-        meshView.mesh = model.toMesh()
+        meshView.mesh = model.toMesh().apply {
+
+        }
         meshRotationX.pivotZ = model.job.length * 0.5
     }
 

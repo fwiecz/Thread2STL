@@ -3,6 +3,7 @@ package de.hpled.threadtostl
 import com.sun.javafx.geom.Vec3f
 import javafx.scene.shape.TriangleMesh
 import javafx.scene.shape.VertexFormat
+import java.lang.StringBuilder
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -32,6 +33,25 @@ class Model(val job: Job){
         }).toIntArray()
         m.faces.setAll(fs, 0, fs.size)
         return m
+    }
+
+    fun toSTL(progress: (p: Double) -> Unit) : String {
+        val sb = StringBuilder()
+        sb.append("solid ascii\n")
+        faces.forEachIndexed { index, ints ->
+            val (p1, p2, p3) = Triple(vertices[ints[0]], vertices[ints[1]], vertices[ints[2]])
+            val normal = Vec3f(p2).apply { sub(p1); cross(this, Vec3f(p2).apply { sub(p1) }); normalize() }
+            sb.append("  facet normal ${normal.x} ${normal.y} ${normal.z}\n")
+            sb.append("    outer loop\n")
+            sb.append("      vertex ${p1.x} ${p1.y} ${p1.z}\n")
+            sb.append("      vertex ${p2.x} ${p2.y} ${p2.z}\n")
+            sb.append("      vertex ${p3.x} ${p3.y} ${p3.z}\n")
+            sb.append("    endloop\n")
+            sb.append("  endfacet\n")
+            progress(index.toDouble() / faces.size)
+        }
+        sb.append("endsolid ascii\n")
+        return sb.toString()
     }
 
     companion object {
