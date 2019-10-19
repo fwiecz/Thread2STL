@@ -1,7 +1,7 @@
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
 <?import de.hpled.threadtostl.Preferences?>
+<?import de.hpled.threadtostl.PreviewScene?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
 <VBox fx:controller="de.hpled.threadtostl.MainController"
       xmlns:fx="http://javafx.com/fxml">
 
@@ -9,18 +9,19 @@
         <Button text="%label.openPreset"/>
         <Button text="%label.savePreset"/>
         <Separator/>
-        <Button text="%label.exportSTL"/>
+        <Button fx:id="exportButton" text="%label.exportSTL"/>
     </ToolBar>
 
     <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.35">
 
         <TabPane minWidth="200">
             <Tab text="%label.preferences" closable="false">
-                <Preferences/>
+                <Preferences fx:id="preferences"/>
+
             </Tab>
         </TabPane>
 
-        <Pane/>
+        <PreviewScene fx:id="previewScene"/>
 
     </SplitPane>
 

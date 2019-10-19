@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <fx:root type="javafx.scene.layout.VBox"
          xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
@@ -52,7 +53,7 @@
             <Spinner fx:id="threadAngleSpinner" editable="true"
                      GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="80">
                 <valueFactory>
-                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="5" max="89" initialValue="%default.threadAngle"
+                    <SpinnerValueFactory.DoubleSpinnerValueFactory min="1" max="179" initialValue="%default.threadAngle"
                                                                    amountToStepBy="1"/>
                 </valueFactory>
             </Spinner>
@@ -67,6 +68,37 @@
                 </valueFactory>
             </Spinner>
             <Label GridPane.rowIndex="3" GridPane.columnIndex="2" text="%label.unit.millimeter"/>
+
+        </GridPane>
+    </TitledPane>
+
+    <TitledPane text="%label.resolution" collapsible="false">
+        <padding>
+            <Insets topRightBottomLeft="4"/>
+        </padding>
+        <GridPane vgap="10" hgap="10">
+
+            <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="%label.resolutionPreview"/>
+            <Spinner fx:id="resolutionPreview" editable="true"
+                     GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="80">
+                <valueFactory>
+                    <SpinnerValueFactory.IntegerSpinnerValueFactory min="10" max="9999"
+                                                                   initialValue="%default.resolutionPreview"
+                                                                   amountToStepBy="10"/>
+                </valueFactory>
+            </Spinner>
+            <Label GridPane.rowIndex="0" GridPane.columnIndex="2" text="%label.unit.stepsPer360"/>
+
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="%label.resolutionExport"/>
+            <Spinner fx:id="resolutionExport" editable="true"
+                     GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="80">
+                <valueFactory>
+                    <SpinnerValueFactory.IntegerSpinnerValueFactory min="10" max="9999"
+                                                                   initialValue="%default.resolutionExport"
+                                                                   amountToStepBy="10"/>
+                </valueFactory>
+            </Spinner>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="2" text="%label.unit.stepsPer360"/>
 
         </GridPane>
     </TitledPane>

@@ -9,10 +9,6 @@ import javafx.scene.layout.VBox
 import java.net.URL
 import java.util.*
 
-enum class Type {
-    NUT, BOLT
-}
-
 class Preferences : VBox(), Initializable {
     @FXML
     private lateinit var typeComboBox: ComboBox<String>
@@ -24,6 +20,10 @@ class Preferences : VBox(), Initializable {
     private lateinit var threadAngleSpinner: Spinner<Double>
     @FXML
     private lateinit var threadStepSpinner: Spinner<Double>
+    @FXML
+    private lateinit var resolutionPreview: Spinner<Int>
+    @FXML
+    private lateinit var resolutionExport: Spinner<Int>
 
     private val resources = ResourceBundle.getBundle("strings")!!
     private val types = mapOf<Type, String>(
@@ -37,6 +37,19 @@ class Preferences : VBox(), Initializable {
             setController(this@Preferences)
             load()
         }
+    }
+
+    fun getJobPreview() = Job().apply {
+        type = Type.values().get(typeComboBox.selectionModel.selectedIndex)
+        outerDiameter = threadDiaSpinner.value
+        length = threadLengthSpinner.value
+        angle = threadAngleSpinner.value
+        step = threadStepSpinner.value
+        resolution = resolutionPreview.value
+    }
+
+    fun getJobExport() = getJobPreview().apply {
+        resolution = resolutionExport.value
     }
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
