@@ -1,7 +1,6 @@
 package de.hpled.threadtostl
 
 import javafx.application.Application
-import javafx.application.Platform
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
@@ -22,11 +21,8 @@ class Main : Application() {
             show()
         }
     }
+}
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            launch(Main::class.java, *args)
-        }
-    }
+fun main() {
+    Application.launch(Main::class.java)
 }
